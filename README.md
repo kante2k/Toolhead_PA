@@ -1,35 +1,174 @@
-# Pressure Advance
-
-This file contains information about the pressure advance feature and its significance in 3D printing. It addresses how pressure advance works, its implementation, benefits, and relevant settings.
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Implementation](#implementation)
-- [Benefits](#benefits)
-- [Settings](#settings)
+# Pressure Advance Management for Multi-Toolhead Klipper Printers
 
 ## Overview
 
-Pressure advance is a technique used to compensate for the lag in extrusion response in 3D printers. It adjusts the flow of filament to ensure smoother and more accurate prints, particularly in high-speed scenarios.
+This configuration system automatically manages **Pressure Advance (PA)** settings for multiple extruders/toolheads on Klipper 3D printers. PA values are dynamically adjusted based on the material type currently loaded in each extruder.
 
-## Implementation
+## Supported Materials
 
-The implementation of pressure advance can vary across different firmware and slicers. Generally, it involves adjusting the firmware settings to optimize the extrusion process during rapid movements.
+The system includes pre-configured PA values for the following materials:
 
-## Benefits
+| Material | PA Value | Application |
+|----------|----------|-------------|
+| **PLA** | 0.03 | Standard FDM filament, universally applicable |
+| **PETG** | 0.042 | Engineering filament, popular for functional parts |
+| **ABS** | 0.055 | High-temperature filament, requires fine-tuning |
+| **TPU** | 0.020 | Flexible filament, requires lower PA values |
 
-Implementing pressure advance can lead to:
+## Features
 
-- Improved print quality
-- Reduced stringing and oozing
-- Enhanced layer adhesion
+- ✅ Multi-extruder support (tracks material per toolhead)
+- ✅ Automatic PA switching during print
+- ✅ Material state tracking
+- ✅ Easy addition of new materials
+- ✅ User feedback via messages
+- ✅ Klipper-native macros
 
-## Settings
+## Macros
 
-Common settings for pressure advance include:
-- Pressure Advance Factor
-- Minimum Extrusion Time
-- Retract Settings
+### MATERIAL_STATE
+Tracks the current material type for each extruder.
 
-For optimal results, it may require some experimentation to find the best values for a specific printer configuration.
+```gcode
+[gcode_macro MATERIAL_STATE]
+variable_extruder: "PETG"       # Main extruder material
+variable_extruder1: "PETG"      # Extruder 1 material
+variable_extruder2: "PLA"       # Extruder 2 material
+variable_extruder3: "PLA"       # Extruder 3 material
+gcode:
+    ; nothing
+```
+
+### SET_PA_FOR_EXTRUDER
+Sets the Pressure Advance value based on the specified material.
+
+**Usage:**
+```gcode
+SET_PA_FOR_EXTRUDER MATERIAL=PLA
+SET_PA_FOR_EXTRUDER MATERIAL=PETG
+SET_PA_FOR_EXTRUDER MATERIAL=ABS
+SET_PA_FOR_EXTRUDER MATERIAL=TPU
+```
+
+**How it works:**
+```gcode
+[gcode_macro SET_PA_FOR_EXTRUDER]
+gcode:
+    {% set mat = params.MATERIAL|upper %}
+
+    {% if mat == "PLA" %}
+        SET_PRESSURE_ADVANCE EXTRUDER=extruder ADVANCE=0.03
+        RESPOND PREFIX=PA MSG="→ PLA → PA=0.03"
+
+    {% elif mat == "PETG" %}
+        SET_PRESSURE_ADVANCE EXTRUDER=extruder ADVANCE=0.042
+        RESPOND PREFIX=PA MSG="→ PETG → PA=0.042"
+
+    {% elif mat == "ABS" %}
+        SET_PRESSURE_ADVANCE EXTRUDER=extruder ADVANCE=0.055
+        RESPOND PREFIX=PA MSG="→ ABS → PA=0.055"
+
+    {% elif mat == "TPU" %}
+        SET_PRESSURE_ADVANCE EXTRUDER=extruder ADVANCE=0.020
+        RESPOND PREFIX=PA MSG="→ TPU → PA=0.020"
+
+    {% else %}
+        RESPOND PREFIX=PA MSG="Unknown material: {mat}"
+    {% endif %}
+```
+
+### SET_EXTRUDER_MATERIAL
+Updates the material type for a specific extruder and applies the corresponding PA value.
+
+**Usage:**
+```gcode
+SET_EXTRUDER_MATERIAL EXTRUDER=extruder MATERIAL=PLA
+SET_EXTRUDER_MATERIAL EXTRUDER=extruder1 MATERIAL=PETG
+SET_EXTRUDER_MATERIAL EXTRUDER=extruder2 MATERIAL=ABS
+SET_EXTRUDER_MATERIAL EXTRUDER=extruder3 MATERIAL=TPU
+```
+
+**How it works:**
+```gcode
+[gcode_macro SET_EXTRUDER_MATERIAL]
+gcode:
+    {% set ext = params.EXTRUDER %}
+    {% set mat = params.MATERIAL|upper %}
+
+    SET_GCODE_VARIABLE MACRO=MATERIAL_STATE VARIABLE={ext} VALUE="'{mat}'"
+    SET_PA_FOR_EXTRUDER EXTRUDER={ext} MATERIAL={mat}
+```
+
+## Configuration
+
+1. Add the `matmanage.cfg` file to your Klipper configuration directory
+2. Include it in your `printer.cfg`:
+   ```ini
+   [include matmanage.cfg]
+   ```
+3. Update the material variables in `MATERIAL_STATE` according to your configuration
+4. Adjust PA values based on calibration results
+
+## Workflow
+
+### Before Print - Set Material
+```gcode
+; Set materials before starting print
+SET_EXTRUDER_MATERIAL EXTRUDER=extruder MATERIAL=PETG
+SET_EXTRUDER_MATERIAL EXTRUDER=extruder1 MATERIAL=PLA
+SET_EXTRUDER_MATERIAL EXTRUDER=extruder2 MATERIAL=ABS
+SET_EXTRUDER_MATERIAL EXTRUDER=extruder3 MATERIAL=TPU
+```
+
+### During Print - Switch Extruder
+```gcode
+; Switch to extruder with PLA and apply PA
+T0                                          ; Select toolhead 0
+SET_PA_FOR_EXTRUDER MATERIAL=PLA           ; Apply PLA PA value
+```
+
+## Customization
+
+### Adding New Materials
+Edit `matmanage.cfg` and add a new condition:
+
+```gcode
+{% elif mat == "NYLON" %}
+    SET_PRESSURE_ADVANCE EXTRUDER=extruder ADVANCE=0.065
+    RESPOND PREFIX=PA MSG="→ NYLON → PA=0.065"
+```
+
+### Adjusting PA Values
+Fine-tune PA values based on your calibration results:
+
+```gcode
+{% if mat == "PLA" %}
+    SET_PRESSURE_ADVANCE EXTRUDER=extruder ADVANCE=0.035  ; Your calibrated value
+```
+
+## PA Calibration Tips
+
+1. **Use a PA Tower**: Print at different PA values to find the optimal setting
+2. **Test Multiple Speeds**: PA varies with print speed; calibrate at your typical speed
+3. **Keep Notes**: Track which materials work best at which PA values
+4. **Per-Extruder Tuning**: Different extruders may need different PA values
+5. **Temperature Impact**: PA can be affected by nozzle temperature; recalibrate if changing temps
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Unknown material error | Check spelling; material names are case-insensitive |
+| PA not changing | Verify macro is included in printer.cfg |
+| Different toolheads have different PA | Modify macro to pass `EXTRUDER=` parameter |
+
+## References
+
+- [Klipper Pressure Advance Documentation](https://www.klipper3d.org/Pressure_Advance.html)
+- [G-Code Macro Documentation](https://www.klipper3d.org/Command_Templates.html)
+
+---
+
+**Version:** 1.0  
+**Last Updated:** 2026-02-17 16:45:33  
+**License:** Open Source
