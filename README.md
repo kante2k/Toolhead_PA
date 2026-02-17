@@ -124,10 +124,11 @@ gcode:
 
 			# --- Pressure Advance ---
     	{% set mat = printer["gcode_macro MATERIAL_STATE"].extruder %}
-    	SET_PA_FOR_EXTRUDER EXTRUDER=extruder MATERIAL={mat}[gcode_macro T1]
-		gcode:
-   
-			{% set mat = printer["gcode_macro MATERIAL_STATE"].extruder1 %}
+    	SET_PA_FOR_EXTRUDER EXTRUDER=extruder MATERIAL={mat}
+
+   				[gcode_macro T1]
+				gcode:
+   			{% set mat = printer["gcode_macro MATERIAL_STATE"].extruder1 %}
   		  SET_PA_FOR_EXTRUDER EXTRUDER=extruder1 MATERIAL={mat}
     ```
 
