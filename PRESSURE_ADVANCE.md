@@ -1,24 +1,54 @@
-# Pressure Advance System for Multiple Toolheads on Klipper Printers
+# Pressure Advance Documentation
 
-## Introduction
-The pressure advance system is a crucial feature for achieving high-quality prints, especially when utilizing multiple toolheads in Klipper-controlled printers. It helps manage filament pressure during rapid moves and transitions, ensuring that the extruder reacts promptly to changes in printing speed.
+## Overview
+The Pressure Advance feature optimizes the extrusion during the print process, allowing for better control over filament flow and reducing issues like oozing and stringing. This document provides an in-depth look at the settings, macros, and examples of workflows for utilizing pressure advance effectively.
 
-## How It Works
-The principle behind pressure advance is relatively simple. When a printer moves at high speeds, there's a lag between the extruder's action and the flow of filament due to pressure build-up. Pressure advance compensates for this by anticipating the needed adjustment in filament flow.
+## Material Table
+| Material      | Recommended PA Setting | Printer Settings       |
+|---------------|------------------------|------------------------|
+| PLA           | 0.1                    | Temperature: 210°C     |
+| PETG          | 0.2                    | Temperature: 240°C     |
+| ABS           | 0.3                    | Temperature: 250°C     |
 
-## Configuration
-To set up pressure advance for a multi-toolhead setup, users need to define specific parameters in the Klipper configuration files. Here are the typical parameters:
-- `pressure_advance`: A float value that defines the pressure advance factor.
-- `toolhead_count`: The number of toolheads being used.
-
-Example configuration:
+## Macro Descriptions
+### Macro: Set Pressure Advance
+```gcode
+M572 D0 S{value}
 ```
-toolhead:
-  pressure_advance: 0.05
-  toolhead_count: 2
+Use this macro to set the pressure advance value for the current filament. Adjust the `{value}` parameter according to the material being used.
+
+### Macro: Disable Pressure Advance
+```gcode
+M572 D0 S0
 ```
+This macro will disable pressure advance for the current print.
 
-## Conclusion
-Implementing pressure advance in a multi-toolhead configuration significantly enhances print quality. By adjusting the extruder movements based on the pressure, users can achieve smoother transitions and reduced stringing during printing operations.
+## Workflow Examples
+### Example 1: Standard Print with Pressure Advance
+1. Start with the following pre-print macro:
+    ```gcode
+    M572 D0 S0.1 ; Set PA for PLA
+    G28 ; Home all axes
+    G1 Z15.0 F9000 ; Move the platform down 15 mm
+    G92 E0 ; Reset the extrusion distance
+    ```
+2. Run the print using your standard G-code.
 
-For more advanced configurations, consult the official Klipper documentation.
+### Example 2: Pressure Advance Adjustment
+1. If you notice stringing, increase the PA value:
+    ```gcode
+    M572 D0 S0.15 ; Increase PA for better control
+    ```
+
+## Customization Guide
+1. **Identify Material Type**: Always begin by knowing the type of filament you are printing with.
+2. **Set the Pressure Advance**: Use the provided macros to adjust the PA settings based on the material you are using.
+3. **Test Prints**: Conduct test prints to evaluate the effectiveness of the PA settings.
+
+## Troubleshooting
+- **Issue**: Excessive stringing during prints.
+  - **Solution**: Increase the pressure advance setting gradually.
+- **Issue**: Under-extrusion or gaps in prints.
+  - **Solution**: Decrease the pressure advance setting to allow for better material flow.
+
+For further assistance, consult the community forums or the printer manual.
