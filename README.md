@@ -111,6 +111,13 @@ gcode:
 
 ## Workflow
 
+Add this to your Toolchange macro
+
+{% set mat = printer["gcode_macro MATERIAL_STATE"].extruder %}
+    SET_PA_FOR_EXTRUDER EXTRUDER=extruder MATERIAL={mat}
+
+
+
 ### Before Print - Set Material
 ```gcode
 ; Set materials before starting print
