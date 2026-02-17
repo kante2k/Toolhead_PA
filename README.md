@@ -76,27 +76,6 @@ gcode:
     {% endif %}
 ```
 
-### SET_EXTRUDER_MATERIAL
-Updates the material type for a specific extruder and applies the corresponding PA value.
-
-**Usage:**
-```gcode
-SET_EXTRUDER_MATERIAL EXTRUDER=extruder MATERIAL=PLA
-SET_EXTRUDER_MATERIAL EXTRUDER=extruder1 MATERIAL=PETG
-SET_EXTRUDER_MATERIAL EXTRUDER=extruder2 MATERIAL=ABS
-SET_EXTRUDER_MATERIAL EXTRUDER=extruder3 MATERIAL=TPU
-```
-
-**How it works:**
-```gcode
-[gcode_macro SET_EXTRUDER_MATERIAL]
-gcode:
-    {% set ext = params.EXTRUDER %}
-    {% set mat = params.MATERIAL|upper %}
-
-    SET_GCODE_VARIABLE MACRO=MATERIAL_STATE VARIABLE={ext} VALUE="'{mat}'"
-    SET_PA_FOR_EXTRUDER EXTRUDER={ext} MATERIAL={mat}
-```
 
 ## Configuration
 
@@ -131,24 +110,6 @@ gcode:
   		  SET_PA_FOR_EXTRUDER EXTRUDER=extruder1 MATERIAL={mat}
     ```
 
-## Workflow
-
-
-### Before Print - Set Material
-```gcode
-; Set materials before starting print
-SET_EXTRUDER_MATERIAL EXTRUDER=extruder MATERIAL=PETG
-SET_EXTRUDER_MATERIAL EXTRUDER=extruder1 MATERIAL=PLA
-SET_EXTRUDER_MATERIAL EXTRUDER=extruder2 MATERIAL=ABS
-SET_EXTRUDER_MATERIAL EXTRUDER=extruder3 MATERIAL=TPU
-```
-
-### During Print - Switch Extruder
-```gcode
-; Switch to extruder with PLA and apply PA
-T0                                          ; Select toolhead 0
-SET_PA_FOR_EXTRUDER MATERIAL=PLA           ; Apply PLA PA value
-```
 
 ## Customization
 
