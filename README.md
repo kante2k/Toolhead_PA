@@ -120,34 +120,15 @@ gcode:
    Example :
    ```gcode
                [gcode_macro T0]
-gcode:
-    SYNC_EXTRUDER_MOTION EXTRUDER=ex1 MOTION_QUEUE=extruder
-    SYNC_EXTRUDER_MOTION EXTRUDER=ex2 MOTION_QUEUE=
-    SYNC_EXTRUDER_MOTION EXTRUDER=ex3 MOTION_QUEUE=
-    SYNC_EXTRUDER_MOTION EXTRUDER=ex4 MOTION_QUEUE=
-	SET_STEPPER_ENABLE STEPPER='extruder_stepper ex1' ENABLE=1
-    SET_STEPPER_ENABLE STEPPER='extruder_stepper ex2' ENABLE=0
+				gcode:
 
-
-  
-	# --- Pressure Advance ---
-    {% set mat = printer["gcode_macro MATERIAL_STATE"].extruder %}
-    SET_PA_FOR_EXTRUDER EXTRUDER=extruder MATERIAL={mat}
-
-
-
-
-[gcode_macro T1]
-gcode:
-    SYNC_EXTRUDER_MOTION EXTRUDER=ex1 MOTION_QUEUE=
-    SYNC_EXTRUDER_MOTION EXTRUDER=ex2 MOTION_QUEUE=extruder
-    SYNC_EXTRUDER_MOTION EXTRUDER=ex3 MOTION_QUEUE=
-    SYNC_EXTRUDER_MOTION EXTRUDER=ex4 MOTION_QUEUE=
-	SET_STEPPER_ENABLE STEPPER='extruder_stepper ex1' ENABLE=0
-    SET_STEPPER_ENABLE STEPPER='extruder_stepper ex2' ENABLE=1
-
-	{% set mat = printer["gcode_macro MATERIAL_STATE"].extruder1 %}
-    SET_PA_FOR_EXTRUDER EXTRUDER=extruder1 MATERIAL={mat}
+			# --- Pressure Advance ---
+    	{% set mat = printer["gcode_macro MATERIAL_STATE"].extruder %}
+    	SET_PA_FOR_EXTRUDER EXTRUDER=extruder MATERIAL={mat}[gcode_macro T1]
+		gcode:
+   
+			{% set mat = printer["gcode_macro MATERIAL_STATE"].extruder1 %}
+  		  SET_PA_FOR_EXTRUDER EXTRUDER=extruder1 MATERIAL={mat}
     ```
 
 ## Workflow
