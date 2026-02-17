@@ -111,8 +111,10 @@ gcode:
 
 5. Add this to your Toolchange macro
 
-    ```{% set mat = printer["gcode_macro MATERIAL_STATE"].extruder %}
-    SET_PA_FOR_EXTRUDER EXTRUDER=extruder MATERIAL={mat}```
+    ```gcode
+       {% set mat = printer["gcode_macro MATERIAL_STATE"].extruder %}
+        SET_PA_FOR_EXTRUDER EXTRUDER=extruder MATERIAL={mat}
+    ```
 
 
 ## Workflow
