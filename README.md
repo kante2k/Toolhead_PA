@@ -109,13 +109,13 @@ gcode:
 3. Update the material variables in `MATERIAL_STATE` according to your configuration
 4. Adjust PA values based on calibration results
 
-## Workflow
-
-Add this to your Toolchange macro
+5. Add this to your Toolchange macro
 
 {% set mat = printer["gcode_macro MATERIAL_STATE"].extruder %}
     SET_PA_FOR_EXTRUDER EXTRUDER=extruder MATERIAL={mat}
 
+
+## Workflow
 
 
 ### Before Print - Set Material
