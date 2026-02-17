@@ -21,8 +21,7 @@ The system includes pre-configured PA values for the following materials:
 - ✅ Automatic PA switching during print
 - ✅ Material state tracking
 - ✅ Easy addition of new materials
-- ✅ User feedback via messages
-- ✅ Klipper-native macros
+
 
 ## Macros
 
