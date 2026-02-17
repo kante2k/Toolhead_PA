@@ -117,7 +117,8 @@ gcode:
     ```
     Change EXTRUDER=extruder1 or your extruder name for other Extruder/Hotend
 
-   Example : ```gcode
+   Example :
+   ```gcode
                [gcode_macro T0]
 gcode:
     SYNC_EXTRUDER_MOTION EXTRUDER=ex1 MOTION_QUEUE=extruder
