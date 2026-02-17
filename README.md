@@ -4,16 +4,16 @@
 
 This configuration system automatically manages **Pressure Advance (PA)** settings for multiple extruders/toolheads on Klipper 3D printers. PA values are dynamically adjusted based on the material type currently loaded in each extruder.
 
-## Supported Materials
+## Supported Materials examples
 
 The system includes pre-configured PA values for the following materials:
 
-| Material | PA Value | Application |
-|----------|----------|-------------|
-| **PLA** | 0.03 | Standard FDM filament, universally applicable |
-| **PETG** | 0.042 | Engineering filament, popular for functional parts |
-| **ABS** | 0.055 | High-temperature filament, requires fine-tuning |
-| **TPU** | 0.020 | Flexible filament, requires lower PA values |
+| Material | PA Value | 
+|----------|----------|
+| **PLA** | 0.03 |
+| **PETG** | 0.042 |
+| **ABS** | 0.055 |
+| **TPU** | 0.020 |
 
 ## Features
 
